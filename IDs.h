@@ -1,0 +1,21 @@
+#pragma once
+
+enum IDPanels
+{
+	// Main (0-50)
+	ID_SHOW_MAIN = 0,
+	ID_TASKBAR_SHOW = 10,
+
+	// ProjectSelection (51-100)
+	ID_DATABASE_CONNECT = 51,
+	ID_DATABASE_URI,
+	ID_CREATE_PROJECT = 61,
+	ID_PROJECTS_BUTTON = 71,
+	ID_PROJECTS_DELETE_BUTTON,
+
+	// ProjectMain (101-150)
+	ID_PROJECT_LIST_TREE = 101,
+	ID_PROJECT_MENU_CREATE_ITEM, // Create item from top left menu
+	ID_PROJECT_CONTEXT_CREATE_ITEM, // Create item
+	ID_PROJECT_CONTEXT_DELETE_ITEM // Delete item
+};
