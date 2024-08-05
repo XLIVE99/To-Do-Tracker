@@ -12,7 +12,7 @@
 
 #define APPICON "#101"
 #define APPNAME "To-Do Tracker"
-#define APPVERSION "0.1"
+#define APPVERSION "0.11"
 
 //#define _CRTDBG_MAP_ALLOC
 //#ifdef _MSC_VER
