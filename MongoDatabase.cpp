@@ -73,6 +73,7 @@ int MongoDatabase::Connect(std::string databaseUri)
 #if _DEBUG
 		cout << "invalid uri" << endl;
 #endif
+		throw std::exception("Invalid uri");
 		return 1;
 	}
 
@@ -80,6 +81,18 @@ int MongoDatabase::Connect(std::string databaseUri)
 	client_options.server_api_opts(api);
 
 	currentClient = std::unique_ptr<mongocxx::client>(new mongocxx::client(mongoURI, client_options));
+
+	try
+	{
+		// Shortest way to check if we established connection to the database
+		currentClient->list_database_names();
+	}
+	catch (const std::exception& e)
+	{
+		cout << "There is an error " << e.what() << endl;
+		throw e;
+		return 2;
+	}
 
 #if _DEBUG
 	cout << "Connected to the " << databaseUri << endl;

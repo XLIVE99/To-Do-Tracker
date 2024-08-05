@@ -389,19 +389,38 @@ void ProjectSelection::OnDeleteProject(wxString project)
 void ProjectSelection::OnConnectButton(wxCommandEvent& e)
 {
 	MongoDatabase* currentDatabase = MongoDatabase::GetInstance();
-	int connectionStatus = 0;
+	int connectionStatus = -1;
 	if (currentDatabase->GetClient() == nullptr)
 	{
 #if _DEBUG
 		cout << "Client not detected on database, creating connection to " << databaseUriCtrl->GetValue().ToStdString() << endl;
 #endif
-		connectionStatus = currentDatabase->Connect(databaseUriCtrl->GetValue().ToStdString());
+		try
+		{
+			connectionStatus = currentDatabase->Connect(databaseUriCtrl->GetValue().ToStdString());
+		}
+		catch (const std::exception& e)
+		{
+			wxLogError(e.what());
+			return;
+		}
 	}
 	else
 	{
 #if _DEBUG
 		cout << "Connection already established, show collections" << endl;
 #endif
+
+		try
+		{
+			// Shortest way to check if we established connection to the database
+			currentDatabase->GetClient()->list_database_names();
+		}
+		catch (const std::exception& e)
+		{
+			wxLogError(e.what());
+			return;
+		}
 	}
 
 	if (connectionStatus != 0)
