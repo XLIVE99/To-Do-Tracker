@@ -130,6 +130,7 @@ ProjectItems::ProjectItems(wxWindow* parent, mongocxx::collection collection)
 
 			// Spawn the childs (if any) of the added node
 			// This will create hollow nodes to be filled later
+			// Or reparent already created node
 			if (doc["childs"])
 			{
 				auto docArray = doc["childs"].get_array().value;
@@ -137,7 +138,27 @@ ProjectItems::ProjectItems(wxWindow* parent, mongocxx::collection collection)
 				{
 					for (auto i = docArray.begin(); i != docArray.end(); ++i)
 					{
-						treeData->Add(added, "", false, (std::string)i->get_string().value);
+						std::string checkDocID = (std::string)i->get_string().value;
+						bool found = false;
+
+						// Check if this child node created before the parent
+						for (auto& created : createds)
+						{
+							if (created->GetDocID() == checkDocID)
+							{
+								assert((created->GetParent()) == nullptr && "Somehow this node must have 2 parent at the same time!");
+
+								// This node has a child with this document ID
+								//created->ReParent(added);
+								treeData->ReParent(created, added, -1);
+								found = true;
+								break;
+							}
+						}
+
+						// This child node will be created later
+						if(!found)
+							treeData->Add(added, "", false, checkDocID);
 						//added->Append(new ToDoModelNode(added, "", false, (std::string)i->get_string().value));
 					}
 				}
@@ -145,7 +166,8 @@ ProjectItems::ProjectItems(wxWindow* parent, mongocxx::collection collection)
 
 			// Second, check if newly created (added node) has any created as a child
 			// This can happen if child created first then parent created
-			ToDoModelNodePtrArray& addedChilds = added->GetChildren();
+			// Moved inside the node creation process
+			/*ToDoModelNodePtrArray& addedChilds = added->GetChildren();
 			for (const auto& aChild : addedChilds)
 			{
 				std::string checkDocID = aChild.get()->GetDocID();
@@ -155,11 +177,14 @@ ProjectItems::ProjectItems(wxWindow* parent, mongocxx::collection collection)
 					{
 						assert((created->GetParent()) == nullptr && "Somehow this node must have 2 parent at the same time!");
 
+						std::cout << "reparented " << created->m_task << " to " << added->m_task << std::endl;
+
 						// This node has a child with this document ID
-						created->ReParent(added);
+						//created->ReParent(added);
+						//treeData->ReParent(created, added, -1);
 					}
 				}
-			}
+			}*/
 
 			// Add newly created node to created vector
 			createds.push_back(added);
